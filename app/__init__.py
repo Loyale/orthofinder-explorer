@@ -16,7 +16,7 @@ def create_app():
         from sqlalchemy import create_engine
         engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
         Base.metadata.create_all(engine)
-        
-        from . import routes
+
+        from . import routes  # Import routes after app and db are initialized
 
     return app

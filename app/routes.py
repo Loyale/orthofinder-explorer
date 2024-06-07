@@ -6,8 +6,11 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    orthogroups = db.session.query(Orthogroup).all()
-    return render_template('index.html', orthogroups=orthogroups)
+    return "Hello, world"
+# def index():
+#     orthogroups = db.session.query(Orthogroup).all()
+#     return render_template('index.html', orthogroups=orthogroups)
+
 
 @app.route('/orthogroup/<orthogroup_id>')
 def orthogroup(orthogroup_id):
