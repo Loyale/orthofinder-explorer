@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Orthogroup {{ orthogroup.orthogroup_id }}{% endblock %}
+
+{% block content %}
+<h2>Orthogroup: {{ orthogroup.orthogroup_id }}</h2>
+<p>Description: {{ orthogroup.description }}</p>
+
+<h3>Genes</h3>
+<ul>
+    {% for gene in genes %}
+    <li>{{ gene.gene_name }} ({{ gene.species_id }})</li>
+    {% endfor %}
+</ul>
+
+<h3>Gene Tree</h3>
+<!-- Here you can add a placeholder for the gene tree image or interactive component -->
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h2>Orthogroups</h2>
+<ul>
+    {% for orthogroup in orthogroups %}
+    <li><a href="{{ url_for('orthogroup', orthogroup_id=orthogroup.orthogroup_id) }}">{{ orthogroup.orthogroup_id }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock %}
