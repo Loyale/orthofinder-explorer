@@ -3,16 +3,22 @@
 {% block title %}Orthogroup {{ orthogroup.orthogroup_id }}{% endblock %}
 
 {% block content %}
-<h2>Orthogroup: {{ orthogroup.orthogroup_id }}</h2>
+<h2 class="mt-4">Orthogroup: {{ orthogroup.orthogroup_id }}</h2>
 <p>Description: {{ orthogroup.description }}</p>
-
+<!--
 <h3>Genes</h3>
-<ul>
+<ul class="list-group">
     {% for gene in genes %}
-    <li>{{ gene.gene_id }} ({{ gene.species_id }})</li>
+    <li class="list-group-item">{{ gene.gene_name }} ({{ gene.species_id }})</li>
     {% endfor %}
 </ul>
+-->
 
 <h3>Gene Tree</h3>
-<!-- Placeholder for the gene tree image or interactive component -->
+{% if tree_html %}
+<div id="tree-container">{{ tree_html|safe }}</div>
+{% else %}
+<p>No gene tree available.</p>
+{% endif %}
+
 {% endblock %}
