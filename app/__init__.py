@@ -1,12 +1,13 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from .models import Base, Orthogroup, Gene, Sequence, Species, GeneKeyLookup
+import os
 
 db = SQLAlchemy()
 
 def create_app():
-    app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/orthofinder.db'
+    app = Flask(__name__, instance_relative_config=True)
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'orthofinder.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     db.init_app(app)
@@ -17,6 +18,10 @@ def create_app():
         engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
         Base.metadata.create_all(engine)
 
-        from . import routes  # Import routes after app and db are initialized
-
+        print("App and DB initialized")
+        from .routes import register_routes
+        register_routes(app)
+        
+        for rule in app.url_map.iter_rules():
+            print(rule)
     return app
