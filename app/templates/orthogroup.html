@@ -1,16 +1,20 @@
 {% extends "base.html" %}
-
 {% block title %}Orthogroup {{ orthogroup.orthogroup_id }}{% endblock %}
 
 {% block content %}
+
 <h2 class="mt-4">Orthogroup: {{ orthogroup.orthogroup_id }}</h2>
 <p>Description: {{ orthogroup.description }}</p>
 
-{% if tree_image %}
 <h3>Gene Tree</h3>
-<div>{{ tree_image | safe }}</div>
-{% else %}
-<p>No gene tree available for this orthogroup.</p>
-{% endif %}
+<svg id="tree-container" />
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+        createTree("{{ orthogroup.gene_tree | safe }}");
+    });
+</script>
+{% endblock %}
 
+{% block scripts %}
+<script src="{{ url_for('static', filename='gene_tree.js') }}"></script>
 {% endblock %}

@@ -20,8 +20,8 @@ def register_routes(app):
         orthogroups = db.session.query(Orthogroup).all()
         return render_template('index.html', orthogroups=orthogroups)
 
-    @app.route('/orthogroup/<string:orthogroup_id>')
-    def orthogroup(orthogroup_id):
+    @app.route('/orthogroup_ete/<string:orthogroup_id>')
+    def orthogroup_ete(orthogroup_id):
         orthogroup = db.session.query(Orthogroup).filter_by(orthogroup_id=orthogroup_id).first_or_404()
 
         tree_image = None
@@ -41,8 +41,12 @@ def register_routes(app):
 
             tree_image = svg_str
 
-        return render_template('orthogroup.html', orthogroup=orthogroup, tree_image=tree_image)
+        return render_template('orthogroup_ete.html', orthogroup=orthogroup, tree_image=tree_image)
 
+    @app.route('/orthogroup/<string:orthogroup_id>')
+    def orthogroup(orthogroup_id):
+        orthogroup = db.session.query(Orthogroup).filter_by(orthogroup_id=orthogroup_id).first_or_404()
+        return render_template('orthogroup.html', orthogroup=orthogroup)
 
     @app.route('/orthogroups', methods=['GET', 'POST'])
     def orthogroups():
