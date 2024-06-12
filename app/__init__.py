@@ -18,10 +18,11 @@ def create_app():
         engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
         Base.metadata.create_all(engine)
 
-        print("App and DB initialized")
+        #print("App and DB initialized")
         from .routes import register_routes
         register_routes(app)
         
-        for rule in app.url_map.iter_rules():
-            print(rule)
+        # Unomment to see all routes
+        #for rule in app.url_map.iter_rules():
+        #    print(rule)
     return app

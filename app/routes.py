@@ -1,14 +1,22 @@
 import logging
-from flask import render_template, request
+from flask import render_template, request, send_file
 from markupsafe import Markup
 from sqlalchemy import func
 from . import db
 from .models import Orthogroup, Gene, Species, Sequence, GeneKeyLookup
 from ete3 import Tree, TreeStyle, NodeStyle, faces, AttrFace, TreeFace, TextFace
+import matplotlib.pyplot as plt
+import matplotlib
 from io import BytesIO
 import base64
 import os
 from tempfile import NamedTemporaryFile
+import json
+from tempfile import NamedTemporaryFile
+import tempfile
+
+# Use Agg backend to avoid issues with Flask
+matplotlib.use('Agg')
 
 def register_routes(app):
     @app.route('/')
@@ -18,32 +26,31 @@ def register_routes(app):
         orthogroups = db.session.query(Orthogroup).all()
         return render_template('index.html', orthogroups=orthogroups)
 
-    @app.route('/orthogroup/<orthogroup_id>')
+    @app.route('/orthogroup/<string:orthogroup_id>')
     def orthogroup(orthogroup_id):
-        orthogroup = db.session.query(Orthogroup).get_or_404(orthogroup_id)
-        genes = db.session.query(Gene).filter_by(orthogroup_id=orthogroup_id).all()
+        orthogroup = db.session.query(Orthogroup).filter_by(orthogroup_id=orthogroup_id).first_or_404()
 
-        # Get the Newick-formatted gene tree from the orthogroup
-        gene_tree_data = orthogroup.gene_tree
+        tree_image = None
+        if orthogroup.gene_tree:
+            tree = Tree(orthogroup.gene_tree)
+            ts = TreeStyle()
+            ts.show_leaf_name = True
 
-        # Render the tree using ete3
-        tree = Tree(gene_tree_data)
-        ts = TreeStyle()
-        ts.show_leaf_name = False
+            # Calculate height dynamically based on the number of genes
+            num_genes = len(tree)
+            tree_height = max(100, num_genes * 20)
 
-        # Build HTML for the tree
-        def render_node(node):
-            if node.is_leaf():
-                url = f"/gene/{node.name}"
-                return f'<li><a href="{url}">{node.name}</a></li>'
-            else:
-                children = ''.join(render_node(child) for child in node.children)
-                return f'<li>{node.name}<ul>{children}</ul></li>'
+            # Render the tree to a list of strings
+            svg_str_list = tree.render(file_name="%%return", w=600, h=tree_height, tree_style=ts)
+            svg_str = "".join([str(element) for element in svg_str_list if isinstance(element, str)])
 
-        tree_html = f'<ul>{render_node(tree)}</ul>'
-        tree_html = Markup(tree_html)
+            # Clean up the SVG string
+            svg_str = svg_str.replace("\\n", "").replace("b'", "").replace("'","")
 
-        return render_template('orthogroup.html', orthogroup=orthogroup, genes=genes, tree_html=tree_html)
+            tree_image = svg_str
+
+        return render_template('orthogroup.html', orthogroup=orthogroup, tree_image=tree_image)
+
 
     @app.route('/orthogroups', methods=['GET', 'POST'])
     def orthogroups():

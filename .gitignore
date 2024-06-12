@@ -164,3 +164,7 @@ cython_debug/
 
 # OrthoFinder Test Data
 data/
+
+# Hide some static files
+app/static/node_modules
+app/static/tmp
