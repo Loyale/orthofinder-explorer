@@ -1,19 +1,13 @@
 import logging
 from flask import render_template, request, send_file
-from markupsafe import Markup
 from sqlalchemy import func
 from . import db
 from .models import Orthogroup, Gene, Species, Sequence, GeneKeyLookup
 from ete3 import Tree, TreeStyle, NodeStyle, faces, AttrFace, TreeFace, TextFace
 import matplotlib.pyplot as plt
 import matplotlib
-from io import BytesIO
-import base64
-import os
 from tempfile import NamedTemporaryFile
-import json
-from tempfile import NamedTemporaryFile
-import tempfile
+
 
 # Use Agg backend to avoid issues with Flask
 matplotlib.use('Agg')
@@ -35,13 +29,11 @@ def register_routes(app):
             tree = Tree(orthogroup.gene_tree)
             ts = TreeStyle()
             ts.show_leaf_name = True
-
-            # Calculate height dynamically based on the number of genes
-            num_genes = len(tree)
-            tree_height = max(100, num_genes * 20)
+            #ts.scale=200
+            ts.branch_vertical_margin = 10
 
             # Render the tree to a list of strings
-            svg_str_list = tree.render(file_name="%%return", w=600, h=tree_height, tree_style=ts)
+            svg_str_list = tree.render(file_name="%%return", w=800, tree_style=ts)
             svg_str = "".join([str(element) for element in svg_str_list if isinstance(element, str)])
 
             # Clean up the SVG string
