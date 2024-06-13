@@ -17,8 +17,7 @@ def register_routes(app):
     def index():
         app.logger.warning('testing warning log')
         print("Index route accessed")
-        orthogroups = db.session.query(Orthogroup).all()
-        return render_template('index.html', orthogroups=orthogroups)
+        return render_template('index.html')
 
     @app.route('/orthogroup_ete/<string:orthogroup_id>')
     def orthogroup_ete(orthogroup_id):

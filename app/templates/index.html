@@ -1,14 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}CephFinder v0.1{% endblock %}
 
 {% block content %}
-<h2 class="mt-4">Orthogroups</h2>
-<ul class="list-group">
-    {% for orthogroup in orthogroups %}
-    <li class="list-group-item">
-        <a href="{{ url_for('orthogroup', orthogroup_id=orthogroup.orthogroup_id) }}">{{ orthogroup.orthogroup_id }}</a>
-    </li>
-    {% endfor %}
-</ul>
+CephFinder can help you explore, search, identify, and annotate genes and gene families across cephalopod species. Use the navigation links above to get started.
+{% endblock %}
+
+{% block scripts %}
+
 {% endblock %}
