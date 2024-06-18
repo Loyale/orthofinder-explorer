@@ -18,12 +18,14 @@ def parse_orthogroups(orthogroups_file,verbose=False):
     if verbose:
         print (f"Reading orthogroups from {orthogroups_file}")
     orthogroups_df = pd.read_csv(orthogroups_file, sep='\t')
-    orthogroups_df = orthogroups_df.melt(id_vars=['Orthogroup'])
-    orthogroups_df.columns = ['orthogroup', 'species', 'genes']
+    orthogroups_df = orthogroups_df.melt(id_vars=["HOG","OG","Gene Tree Parent Clade"])
+    #print(orthogroups_df.head())
+    orthogroups_df.columns = ["hierarchical_orthogroup","orthogroup","parent_clade"'orthogroup', 'species', 'genes']
     orthogroups_df['genes'] = orthogroups_df['genes'].str.split(',')
     return orthogroups_df
 
-orthogroups_file = OFDir + '/Orthogroups/Orthogroups.tsv'
+#orthogroups_file = OFDir + '/Orthogroups/Orthogroups.tsv'
+orthogroups_file = OFDir + '/Phylogenetic_Hierarchical_Orthogroups/N0.tsv'
 orthogroups_df = parse_orthogroups(orthogroups_file)
 
 #orthogroups_df
@@ -95,7 +97,7 @@ sequences_df = get_protein_sequences(species_df)
 # DBase setup
 ##################
 #%% SQLite setup
-engine = create_engine('sqlite:///../instance/orthofinder.db')
+engine = create_engine('sqlite:///../app/instance/orthofinder_new.db')
 
 #%% mySQL setup
 # engine = create_engine('mysql+pymysql://user:password@localhost/orthofinder')

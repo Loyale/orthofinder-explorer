@@ -2,4 +2,15 @@
 - Summarize gene duplication/constriction events
 - Summarize gene family expansion/contraction events
 - Draw gene trees dynamically
-- 
+Re-run orthofinder with some changes:
+- Remove Hofstenia
+- Add:
+  - Apis mellifera
+  - Tribolium castaneum
+  - Anopheles gambiae
+  - Gryllus bimaculatus
+  - Nematostella vectensis
+  - Euprymna scolopes
+  - Pomacea canaliculata
+  - Crassostrea gigas
+  - Berghia stephanieae

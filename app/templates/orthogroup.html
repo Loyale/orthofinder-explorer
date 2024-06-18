@@ -2,19 +2,42 @@
 {% block title %}Orthogroup {{ orthogroup.orthogroup_id }}{% endblock %}
 
 {% block content %}
-
 <h2 class="mt-4">Orthogroup: {{ orthogroup.orthogroup_id }}</h2>
 <p>Description: {{ orthogroup.description }}</p>
 
 <h3>Gene Tree</h3>
-<svg id="tree-container" />
-<script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", function() {
-        createTree("{{ orthogroup.gene_tree | safe }}");
-    });
-</script>
+<!-- Hidden until working
+<div class="btn-group" data-toggle="buttons">
+    <label class="btn btn-default active btn-sm">
+      <input type="radio" name="options" class = "phylotree-layout-mode" data-mode = "linear" autocomplete="off" checked title = "Layout left-to-right"> Linear
+    </label>
+    <label class="btn btn-default  btn-sm">
+      <input type="radio" name="options" class = "phylotree-layout-mode" data-mode = "radial" autocomplete="off" title = "Layout radially"> Radial
+    </label>
+  </div>
+-->
+<div>
+    <input type="range" id="widthRange" min="100" max="1000" value="600">
+</div>
+
+<svg id="tree-container"></svg>
+
 {% endblock %}
 
 {% block scripts %}
+<script src="{{ url_for('static', filename='node_modules/phylotree/phylotree.js') }}"></script>
 <script src="{{ url_for('static', filename='gene_tree.js') }}"></script>
+
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+        tree = createTree("{{ orthogroup.gene_tree | safe }}");
+        console.log(tree)
+        const widthRange = document.getElementById('widthRange');
+        widthRange.addEventListener('input', function() {
+            //console.log(widthRange.value)
+            tree = createTree("{{ orthogroup.gene_tree | safe }}", widthRange.value);
+        });
+    });
+
+</script>
 {% endblock %}
