@@ -22,13 +22,13 @@ stroke-width: 0.5px;
 }
 
 .internal-node circle, .internal-node ellipse, .internal-node rect{
-fill: #78C;
+fill: rgb(6, 119, 43);
 stroke: black;
 stroke-width: 0.5px;
 }
 
-.node {
-font: 12px sans-serif;
+.node text{
+font: 14px sans-serif !important;
 }
 
 .node-selected {

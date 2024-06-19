@@ -64,6 +64,9 @@ function createTreeUpdated(newickData, width = 600, height = 800) {
         'left-right-spacing': 'fit-to-size', 
         'top-bottom-spacing': 'fit-to-size',
         'node-styler': colorNodesByName,
+        'align-tips':true,
+        'zoom':false,
+        'show-scale':true,
     })
 
     $(tree.display.container).html(tree.display.show());
