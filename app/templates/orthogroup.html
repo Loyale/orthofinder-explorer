@@ -36,7 +36,8 @@
 <script type="text/javascript">
   document.addEventListener("DOMContentLoaded", function() {
       let tree = createTreeUpdated("{{ orthogroup.gene_tree | safe }}");
-      console.log(tree);
+      //console.log(tree);
+      //console.log(tree.parsed_tags);
       console.log(tree.getTips());
       //tree.show();
       

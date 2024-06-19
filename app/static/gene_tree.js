@@ -20,7 +20,7 @@ function createTreeUpdated(newickData, width = 600, height = 800) {
         'top-bottom-spacing': 'fit-to-size'
     })
     $(tree.display.container).html(tree.display.show());
-    console.log('Rendering Tree')
+    //console.log('Rendering Tree')
     return tree;
 }
 
