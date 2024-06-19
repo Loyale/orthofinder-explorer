@@ -1,15 +1,19 @@
 {
-  "name": "static",
+  "name": "orthofinder-explorer",
   "version": "1.0.0",
-  "main": "d3_tree.js",
+  "description": "Parsing tool to create a relational DB from Orthofinder output and associated web exploration tool.",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "bootstrap": "^5.3.3",
-    "phylotree": "^0.1.6"
-  }
+    "bootstrap": "^4.5.0",
+    "d3": "^7.9.0",
+    "d3-color": "^3.1.0",
+    "jquery": "^3.5.1",
+    "phylotree": "^2.0.1",
+    "underscore": "^1.9.1"
+  },
+  "author": "Loyal Goff",
+  "license": "MIT"
 }

@@ -17,27 +17,38 @@
   </div>
 -->
 <div>
+    <label for="widthRange">Width</label>
     <input type="range" id="widthRange" min="100" max="1000" value="600">
+    <br>
+    <label for="heightRange">Height</label>
+    <input type="range" id="heightRange" min="100" max="2000" value="800">
 </div>
-
-<svg id="tree-container"></svg>
+<div>
+  <svg id="tree-container"></svg>
+</div>
 
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='node_modules/phylotree/phylotree.js') }}"></script>
+<script src="{{ url_for('static', filename='node_modules/phylotree/dist/phylotree.js') }}"></script>
 <script src="{{ url_for('static', filename='gene_tree.js') }}"></script>
 
 <script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", function() {
-        tree = createTree("{{ orthogroup.gene_tree | safe }}");
-        console.log(tree)
-        const widthRange = document.getElementById('widthRange');
-        widthRange.addEventListener('input', function() {
-            //console.log(widthRange.value)
-            tree = createTree("{{ orthogroup.gene_tree | safe }}", widthRange.value);
-        });
-    });
-
+  document.addEventListener("DOMContentLoaded", function() {
+      let tree = createTreeUpdated("{{ orthogroup.gene_tree | safe }}");
+      console.log(tree);
+      console.log(tree.getTips());
+      //tree.show();
+      
+      const widthRange = document.getElementById('widthRange');
+      const heightRange = document.getElementById('heightRange');
+      // Add event listener to width and height range sliders
+      widthRange.addEventListener('input', function() {
+        tree = createTreeUpdated("{{ orthogroup.gene_tree | safe }}", widthRange.value, heightRange.value);
+      });
+      heightRange.addEventListener('input', function() {
+        tree = createTreeUpdated("{{ orthogroup.gene_tree | safe }}", widthRange.value, heightRange.value);
+      });
+  });
 </script>
 {% endblock %}
