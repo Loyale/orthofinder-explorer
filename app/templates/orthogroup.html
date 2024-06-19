@@ -21,7 +21,7 @@
     <input type="range" id="widthRange" min="100" max="1000" value="600">
     <br>
     <label for="heightRange">Height</label>
-    <input type="range" id="heightRange" min="100" max="2000" value="800">
+    <input type="range" id="heightRange" min="100" max="10000" value="1000">
 </div>
 <div>
   <svg id="tree-container"></svg>
@@ -36,9 +36,10 @@
 <script type="text/javascript">
   document.addEventListener("DOMContentLoaded", function() {
       let tree = createTreeUpdated("{{ orthogroup.gene_tree | safe }}");
-      //console.log(tree);
+      console.log(tree);
       //console.log(tree.parsed_tags);
-      console.log(tree.getTips());
+      //console.log(tree.getTips());
+      console.log(tree.get_parsed_tags())
       //tree.show();
       
       const widthRange = document.getElementById('widthRange');

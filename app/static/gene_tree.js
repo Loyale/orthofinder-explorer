@@ -1,3 +1,5 @@
+//const { selection } = require("d3");
+
 function createTreeUpdated(newickData, width = 600, height = 800) {
     // Create a new phylotree
     const tree = new phylotree.phylotree(newickData);
@@ -11,14 +13,59 @@ function createTreeUpdated(newickData, width = 600, height = 800) {
     // Set the dimensions of the SVG
     svg.attr("width", width).attr("height", height);
 
+    // Get an array of all genus names from node names.split("_")[0]
+    getGenusNames = function (nodeData) {
+        let selection_set = new Set();
+
+        nodeData.forEach( function(d,i) {
+            selection_set.add(d.data.name.split ("_")[0]);
+        })
+        return Array.from(selection_set);
+    };
+
+    selection_set = getGenusNames(tree.getTips());
+    console.log(selection_set);
+
+
+    // Color by genus
+    color_scale = d3.scaleOrdinal(d3.schemeCategory10);
+    //selection_set = tree.get_parsed_tags().length > 0 ? tree.get_parsed_tags() : ["Octopus","Salmo","Danio","Homo","Mus"];
+    nodeColorizer = function (element, data) {
+        try{
+            var count_class = 0;
+        
+            selection_set.forEach (function (d,i) { if (data.data.name.startsWith(d)) { count_class ++; element.style ("fill", color_scale(i), 'important');}});
+            if (count_class > 1) {
+        
+            } else {
+                if (count_class == 0) {
+                    element.style ("fill", null);
+                }
+            }
+        }
+        catch (e) {
+        
+        }
+        };
+
+    colorNodesByName = function (element, data) {
+        nodeColorizer (element, data);
+        var m = (data.data.name).split ("_");
+        if (m.length > 10) {
+            element.style ("stroke", color_scale(_.lowerCase(m[9])));
+        }
+    };
+
     // Render the tree
     renderedTree = tree.render({
         container: "#tree-container",
         height:height, 
         width:width,
         'left-right-spacing': 'fit-to-size', 
-        'top-bottom-spacing': 'fit-to-size'
+        'top-bottom-spacing': 'fit-to-size',
+        'node-styler': colorNodesByName,
     })
+
     $(tree.display.container).html(tree.display.show());
     //console.log('Rendering Tree')
     return tree;
