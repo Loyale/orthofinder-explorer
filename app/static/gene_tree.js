@@ -49,20 +49,26 @@ function createTreeUpdated(newickData, width = 1200, height = 2400) {
         }
         };
 
-    colorNodesByName = function (element, data) {
+    styleNodes = function (element, data) {
+        //color nodes by genus name
         nodeColorizer (element, data);
+        
+        //parse data from gene_name string
         var name_arr = data.data.name.split("_")
         data.data.species = name_arr.slice(0,2).join("_")
         name_arr.splice(0, 2);
         var gene_id = name_arr.join("_")
         data.data.gene_id = gene_id
-        //console.log({'species': data.data.species, 'gene_id': data.data.gene_id})
+        //var url = "/gene/" + gene_id; 
+        var url = "/gene/%20" + gene_id;
+        data.data.url = url 
+        //console.log({'species': data.data.species, 'gene_id': data.data.gene_id, 'url': data.data.url})
 
+        //add click event to node
         element.on("click", function() {
-            //var url = "/gene/" + gene_id; 
-            var url = "/gene/%20" + gene_id; 
             window.open(url, "_self")
         });
+
     };
 
     // Render the tree
@@ -72,7 +78,7 @@ function createTreeUpdated(newickData, width = 1200, height = 2400) {
         width:width,
         'left-right-spacing': 'fit-to-size', 
         'top-bottom-spacing': 'fit-to-size',
-        'node-styler': colorNodesByName,
+        'node-styler': styleNodes,
         'align-tips':true,
         'zoom':false,
         'show-scale':true,
