@@ -28,7 +28,7 @@ stroke-width: 0.5px;
 }
 
 .node text{
-font: 14px sans-serif !important;
+/* font: 14px sans-serif !important; */
 }
 
 .node-selected {

@@ -70,6 +70,8 @@ def register_routes(app):
     
     @app.route('/gene/<string:gene_id>', methods=['GET'])
     def gene_detail(gene_id):
+        #gene_id = gene_id.lstrip(" ")
+        print(f"Gene ID: {gene_id}")
         gene = db.session.query(Gene).filter_by(gene_id=gene_id).first_or_404()
         return render_template('gene.html', gene=gene)
 

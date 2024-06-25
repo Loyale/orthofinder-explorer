@@ -1,6 +1,6 @@
 //const { selection } = require("d3");
 
-function createTreeUpdated(newickData, width = 600, height = 800) {
+function createTreeUpdated(newickData, width = 1200, height = 2400) {
     // Create a new phylotree
     const tree = new phylotree.phylotree(newickData);
 
@@ -24,7 +24,7 @@ function createTreeUpdated(newickData, width = 600, height = 800) {
     };
 
     selection_set = getGenusNames(tree.getTips());
-    console.log(selection_set);
+    //console.log(selection_set);
 
 
     // Color by genus
@@ -33,8 +33,9 @@ function createTreeUpdated(newickData, width = 600, height = 800) {
     nodeColorizer = function (element, data) {
         try{
             var count_class = 0;
-        
-            selection_set.forEach (function (d,i) { if (data.data.name.startsWith(d)) { count_class ++; element.style ("fill", color_scale(i), 'important');}});
+            selection_set.forEach (function (d,i) { 
+                if (data.data.name.startsWith(d)) { count_class ++; element.style ("fill", color_scale(i), 'important');}
+            });
             if (count_class > 1) {
         
             } else {
@@ -50,10 +51,18 @@ function createTreeUpdated(newickData, width = 600, height = 800) {
 
     colorNodesByName = function (element, data) {
         nodeColorizer (element, data);
-        var m = (data.data.name).split ("_");
-        if (m.length > 10) {
-            element.style ("stroke", color_scale(_.lowerCase(m[9])));
-        }
+        var name_arr = data.data.name.split("_")
+        data.data.species = name_arr.slice(0,2).join("_")
+        name_arr.splice(0, 2);
+        var gene_id = name_arr.join("_")
+        data.data.gene_id = gene_id
+        //console.log({'species': data.data.species, 'gene_id': data.data.gene_id})
+
+        element.on("click", function() {
+            //var url = "/gene/" + gene_id; 
+            var url = "/gene/%20" + gene_id; 
+            window.open(url, "_self")
+        });
     };
 
     // Render the tree
@@ -67,10 +76,15 @@ function createTreeUpdated(newickData, width = 600, height = 800) {
         'align-tips':true,
         'zoom':false,
         'show-scale':true,
+        // 'minimum-per-level-spacing': 15,
+        // 'minimum-per-node-spacing': 15,
+        'font-size': 15,
+
     })
 
     $(tree.display.container).html(tree.display.show());
     //console.log('Rendering Tree')
+
     return tree;
 }
 
