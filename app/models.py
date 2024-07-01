@@ -1,6 +1,6 @@
 #!usr/bin/env python
 #from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy import Column, Integer, String, ForeignKey
 
 Base = declarative_base()
@@ -18,14 +18,20 @@ class Gene(Base):
     orthogroup_id = Column(String, ForeignKey('orthogroups.orthogroup_id'))
     species_id = Column(String, ForeignKey('species.species_id'))
     gene_name = Column(String)
+    description = Column(String)
+    sequence = relationship('Sequence', back_populates='gene', uselist=False, cascade="all, delete-orphan")
 
 class Sequence(Base):
     __tablename__ = 'sequences'
-    sequence_id = Column(String, primary_key=True)
-    ortho_sequence_id = Column(String)
+    sequence_idx = Column(String, primary_key=True)
+    ortho_id = Column(String)
+    species_id = Column(String, ForeignKey('species.species_id'))
+    ortho_gene_id = Column(String)
     gene_id = Column(String, ForeignKey('genes.gene_id'))
     protein_sequence = Column(String)
     mrna_sequence = Column(String)
+    
+    gene = relationship('Gene', back_populates='sequence')
 
 class Species(Base):
     __tablename__ = 'species'

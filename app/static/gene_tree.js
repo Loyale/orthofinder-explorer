@@ -59,8 +59,8 @@ function createTreeUpdated(newickData, width = 1200, height = 2400) {
         name_arr.splice(0, 2);
         var gene_id = name_arr.join("_")
         data.data.gene_id = gene_id
-        //var url = "/gene/" + gene_id; 
-        var url = "/gene/%20" + gene_id;
+        var url = "/gene/" + gene_id; 
+        //var url = "/gene/%20" + gene_id;
         data.data.url = url 
         //console.log({'species': data.data.species, 'gene_id': data.data.gene_id, 'url': data.data.url})
 

@@ -72,7 +72,10 @@ def register_routes(app):
     def gene_detail(gene_id):
         #gene_id = gene_id.lstrip(" ")
         print(f"Gene ID: {gene_id}")
-        gene = db.session.query(Gene).filter_by(gene_id=gene_id).first_or_404()
+        gene = db.session.query(Gene).join(Sequence).filter_by(gene_id=gene_id).first_or_404()
+        # query for gene but joined with sequence table
+        for k,v in gene.__dict__.items():
+            print(f"{k}: {v}")
         return render_template('gene.html', gene=gene)
 
     @app.route('/gene/<string:gene_id>/edit', methods=['POST'])

@@ -8,11 +8,26 @@ from sqlalchemy import create_engine
 from models import Base, Orthogroup, Gene, Sequence, Species, GeneKeyLookup
 
 #%%
-OFDir = '../data/Results_May02'
+OFDir = '../data/Results_Jun25'
 verbose=True
 ##########
 # Parsing
 ##########
+#%% Generic multi-fasta parser
+def fasta_generator(fasta_file):
+    with open(fasta_file) as f:
+        header = None
+        sequence = ''
+        for line in f:
+            if line.startswith('>'):
+                if header:
+                    yield header, sequence
+                header = line.strip().lstrip('>')
+                sequence = ''
+            else:
+                sequence += line.strip()
+        yield header, sequence
+
 #%% Orthogroups
 def parse_orthogroups(orthogroups_file,verbose=False):
     if verbose:
@@ -65,15 +80,11 @@ species_tree = get_species_tree(species_tree_file)
 #%% Get protein sequences
 # Multi-gene fasta parser that outputs a pandas df
 def parse_protein_sequence_file(protein_sequence_file):
-    fasta = open(protein_sequence_file).read().split('>')
     protein_sequences = []
-    for entry in fasta[1:]:
-        entry = entry.split('\n')
-        protein_id = entry[0]
-        protein_sequence = ''.join(entry[1:])
-        protein_sequences.append([protein_id, protein_sequence])
-    protein_sequences_df = pd.DataFrame(protein_sequences, columns=['protein_id', 'protein_sequence'])
-    return protein_sequences_df
+    for protein in fasta_generator(protein_sequence_file):
+        species_id, ortho_protein_id = protein[0].split("_")
+        protein_sequences.append((species_id, ortho_protein_id, protein[1]))
+    return protein_sequences
 
 def get_protein_sequences(species_df,verbose=False):
     if verbose:
@@ -83,21 +94,33 @@ def get_protein_sequences(species_df,verbose=False):
         species_of_id = row['species_id']
         print(f"\tFetching {row['species']}")
         protein_sequence_file = OFDir + f'/WorkingDirectory/Species{species_of_id}.fa'
-        protein_sequences_df = parse_protein_sequence_file(protein_sequence_file)
+        protein_sequences = parse_protein_sequence_file(protein_sequence_file)
+        protein_sequences_df = pd.DataFrame(protein_sequences, columns=['species_id', 'ortho_gene_id', 'protein_sequence'])
         sequences.append(protein_sequences_df)
     sequences_df = pd.concat(sequences)
     sequences_df.reset_index(drop=True, inplace=True)
-    sequences_df.set_index('protein_id', inplace=True)
     return sequences_df
 
+def parse_sequence_ids(sequence_id_file):
+    sequenceIDs = pd.read_csv(sequenceIDFile, sep=': ', header=None)
+    sequenceIDs.columns = ['ortho_id', 'gene_id']
+    sequenceIDs[['species_id','ortho_gene_id']] = sequenceIDs['ortho_id'].str.split("_", expand=True)
+    return sequenceIDs
+
 sequences_df = get_protein_sequences(species_df)
-    
+
+sequenceIDFile = OFDir + "/WorkingDirectory/SequenceIDs.txt"
+sequence_ids = parse_sequence_ids(sequenceIDFile)
+#print(sequence_ids.head())
+sequences_df = sequences_df.merge(sequence_ids, on=['species_id', 'ortho_gene_id'], how='inner')
+#print(sequences_df)
+
 #%%
 ##################
 # DBase setup
 ##################
 #%% SQLite setup
-engine = create_engine('sqlite:///../app/instance/orthofinder_new.db')
+engine = create_engine('sqlite:///../instance/orthofinder_new.db')
 
 #%% mySQL setup
 # engine = create_engine('mysql+pymysql://user:password@localhost/orthofinder')
@@ -126,8 +149,16 @@ session.commit()
 print("Loading genes into database")
 for index, row in orthogroups_df.iterrows():
     if isinstance(row['genes'], list) and row['genes']:  # Check if the list is not empty
+        prev_gene_id = None
         for gene_id in row['genes']:
-            gene = Gene(gene_id=gene_id, orthogroup_id=row['orthogroup'], species_id = row['species_id'])
+            gene_id = gene_id.strip()
+            if gene_id == prev_gene_id:
+                print(gene_id)
+            prev_gene_id = gene_id
+            try:
+                gene = Gene(gene_id=gene_id, orthogroup_id=row['orthogroup'], species_id = row['species_id'])
+            except:
+                print(gene_id)
             session.add(gene)
 
 session.commit()
@@ -176,7 +207,24 @@ for ortho, gene_tree in gene_tree_iter:
         # Update the description of the existing orthogroup
         #orthogroup.description = row['Description']
         orthogroup.gene_tree = gene_tree.write()
+
+#Commit the changes to the database
+session.commit()
+
+#%% Protein Sequences
+print("Loading protein sequences into database")
+for index, row in sequences_df.iterrows():
+    sequence = Sequence(sequence_idx=row.name, 
+                        species_id=row['species_id'], 
+                        ortho_gene_id=row['ortho_gene_id'],
+                        ortho_id=row['ortho_id'],
+                        gene_id=row['gene_id'],
+                        protein_sequence=row['protein_sequence'])
+    session.add(sequence)
+
 # Commit the changes to the database
 session.commit()
+
+
 # %%
 print("Done!")
