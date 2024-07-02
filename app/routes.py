@@ -3,7 +3,6 @@ from flask import render_template, request, redirect, url_for, send_file
 from sqlalchemy import func
 from . import db
 from .models import Orthogroup, Gene, Species, Sequence, GeneKeyLookup
-from ete3 import Tree, TreeStyle, NodeStyle, faces, AttrFace, TreeFace, TextFace
 import matplotlib.pyplot as plt
 import matplotlib
 from tempfile import NamedTemporaryFile
@@ -18,29 +17,6 @@ def register_routes(app):
         app.logger.warning('testing warning log')
         print("Index route accessed")
         return render_template('index.html')
-
-    # @app.route('/orthogroup_ete/<string:orthogroup_id>')
-    # def orthogroup_ete(orthogroup_id):
-    #     orthogroup = db.session.query(Orthogroup).filter_by(orthogroup_id=orthogroup_id).first_or_404()
-
-    #     tree_image = None
-    #     if orthogroup.gene_tree:
-    #         tree = Tree(orthogroup.gene_tree)
-    #         ts = TreeStyle()
-    #         ts.show_leaf_name = True
-    #         #ts.scale=200
-    #         ts.branch_vertical_margin = 10
-
-    #         # Render the tree to a list of strings
-    #         svg_str_list = tree.render(file_name="%%return", w=800, tree_style=ts)
-    #         svg_str = "".join([str(element) for element in svg_str_list if isinstance(element, str)])
-
-    #         # Clean up the SVG string
-    #         svg_str = svg_str.replace("\\n", "").replace("b'", "").replace("'","")
-
-    #         tree_image = svg_str
-
-    #     return render_template('orthogroup_ete.html', orthogroup=orthogroup, tree_image=tree_image)
 
     @app.route('/orthogroup/<string:orthogroup_id>')
     def orthogroup(orthogroup_id):
