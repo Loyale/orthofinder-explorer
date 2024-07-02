@@ -1,6 +1,49 @@
 //const { selection } = require("d3");
 
 function createTreeUpdated(newickData, width = 1200, height = 2400) {
+    // Define a color mapping for species
+    const speciesColorMap = {
+        // Closely related Caenorhabditis species
+        'Caenorhabditis_remanei': '#1f77b4',
+        'Caenorhabditis_elegans': '#aec7e8',
+    
+        // Hofstenia miamia
+        'Hofstenia_miamia': '#ff7f0e',
+    
+        // Closely related Hydra and Amphimedon
+        'Hydra_vulgaris': '#2ca02c',
+        'Amphimedon_queenslandica': '#98df8a',
+    
+        // Drosophila melanogaster
+        'Drosophila_melanogaster': '#d62728',
+    
+        // Closely related teleost fish
+        'Danio_rerio': '#bcbd22',
+        'Salmo_salar': '#dbdb8d',
+        'Oncorhynchus_tshawytscha': '#bcbd22',
+    
+        // Closely related mammals
+        'Mus_musculus': '#9467bd',
+        'Homo_sapiens': '#c5b0d5',
+    
+        // Aplysia californica
+        'Aplysia_californica': '#ff9896',
+    
+        // Closely related mollusks
+        'Mercenaria_mercenaria': '#8c564b',
+        'Crassostrea_virginica': '#c49c94',
+        'Mizuhopecten_yessoensis': '#e377c2',
+    
+        // Closely related octopuses
+        'Octopus_bimaculoides': '#174e6f',
+        'Octopus_chierchiae': '#0e3a65',
+        'Octopus_sinensis': '#17becf',
+    
+        // Closely related Euprymna and Doryteuthis
+        'Euprymna_berryi': '#177e2f',
+        'Doryteuthis_pealeii': '#2ca02c'
+    };
+    
     // Create a new phylotree
     const tree = new phylotree.phylotree(newickData);
 
@@ -31,22 +74,24 @@ function createTreeUpdated(newickData, width = 1200, height = 2400) {
     color_scale = d3.scaleOrdinal(d3.schemeCategory10);
     //selection_set = tree.get_parsed_tags().length > 0 ? tree.get_parsed_tags() : ["Octopus","Salmo","Danio","Homo","Mus"];
     nodeColorizer = function (element, data) {
-        try{
-            var count_class = 0;
-            selection_set.forEach (function (d,i) { 
-                if (data.data.name.startsWith(d)) { count_class ++; element.style ("fill", color_scale(i), 'important');}
-            });
-            if (count_class > 1) {
+        // try{
+        //     var count_class = 0;
+        //     selection_set.forEach (function (d,i) { 
+        //         if (data.data.name.startsWith(d)) { count_class ++; element.style ("fill", color_scale(i), 'important');}
+        //     });
+        //     if (count_class > 1) {
         
-            } else {
-                if (count_class == 0) {
-                    element.style ("fill", null);
-                }
-            }
-        }
-        catch (e) {
-        
-        }
+        //     } else {
+        //         if (count_class == 0) {
+        //             element.style ("fill", null);
+        //         }
+        //     }
+        // }
+        const name_parts = data.data.name.split("_");
+        const genus = name_parts[0];
+        const species = name_parts[1];
+        const speciesName = genus + "_" + species;
+        element.style ("fill", speciesColorMap[speciesName], 'important');
         };
 
     styleNodes = function (element, data) {
